@@ -11,7 +11,7 @@ app.use(morgon("tiny"));
 const productSchema = mongoose.Schema({
     name: String,
     image: String,
-    countInStock: Number,
+    countInStock: {type:Number, required:true},
 });
 
 const productModel = mongoose.model("product", productSchema);
@@ -27,6 +27,7 @@ mongoose
     .catch((e) => {
         console.log("something went wrong");
     });
+
 app.post(`${api}/products`, (req, res) => {
     const product = productModel({
         name: req.body.name,
@@ -44,7 +45,11 @@ app.post(`${api}/products`, (req, res) => {
                 success: false,
             });
         });
-    res.send(newProduct);
+});
+
+app.get(`${api}/getproducts`, async(req, res)=>{
+    const productList = await productModel.find();
+    res.status(200).json(productList);
 });
 
 app.listen(3000, () => {
